@@ -47,6 +47,33 @@ void putHex(int hex, int set, char* out) {
     }
     out[8] = '\0';
 }
+
+void putDec(int dec, char* out) {
+    if(!out)
+        return;
+    int i = 0;
+    int neg = 0;
+    if(dec < 0) {
+        neg = 1;
+        dec = -dec;
+    }
+    if(!dec) {
+        out[0] = '0';
+        out[1] = '\0';
+        return;
+    }
+    while(dec > 0) {
+        out[i++] = '0' + (dec % 10);
+        dec /= 10;
+    }
+    if(neg) out[i++] = '-';
+    for(int n = 0; n < i / 2; n++) {
+        char t = out[n];
+        out[i-1-n] = t;
+    }
+    out[i] = '\0';
+}
+
 void puts(const char* str) {
     if(!str)
         return;
@@ -81,6 +108,25 @@ void printf(const char* fmt, ...) {
                     char hex[9];
                     putHex(x, 0, hex);
                     putstr(hex);
+                    fmt++;
+                    continue;
+                }
+                case 's': {
+                    char* s = va_arg(ap, char*);
+                    if(!s) {
+                        putstr("(null)");
+                        fmt++;
+                        continue;
+                    }
+                    putstr(s);
+                    fmt++;
+                    continue;
+                }
+                case 'd': {
+                    int x = va_arg(ap, int);
+                    char dec[11];
+                    putDec(x, dec);
+                    putstr(dec);
                     fmt++;
                     continue;
                 }
