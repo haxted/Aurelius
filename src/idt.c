@@ -21,6 +21,12 @@ void idtInit() {
     }
     idtPtr.size = sizeof(idt) - 1;
     idtPtr.offset = (uint32_t)&idt;
-    //loadIdt(&idtPtr);
+    loadIdt(&idtPtr);
     printf("[x86] initialized idt\n");
+}
+
+void mainExceptionHandler() {
+    printf("[except] metro boomin want some more\n");
+    __asm__ volatile("cli; hlt");
+
 }

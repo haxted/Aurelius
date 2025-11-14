@@ -4,5 +4,5 @@
 void kmain() {
     gdtInit();
     idtInit();
-    printf("[sys] system initialized");
+    printf("[sys] system initialized\n");
 }

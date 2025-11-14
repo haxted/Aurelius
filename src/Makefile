@@ -6,6 +6,9 @@ CFILES = $(wildcard *.c)
 CHDRS = $(wildcard include/*.h)
 ASOBJS = $(patsubst %.S, ../build/%.S.o, $(ASFILES))
 COBJS = $(patsubst %.c, ../build/%.c.o, $(CFILES))
+NASMFILES = $(wildcard *.asm)
+NASMOBJS = $(patsubst %.asm, ../build/%.asm.o, $(NASMFILES))
+NASMFLAGS = -g -felf32
 CFLAGS = -ffreestanding \
 		 -nodefaultlibs -nostartfiles \
 		 -mno-red-zone -fno-stack-protector \
@@ -22,6 +25,8 @@ OUTPUT = ../build/KERNEL
 	$(CC) $(CFLAGS) $< -o $@
 ../build/%.S.o: %.S
 	$(AS) $(ASFLAGS) $< -o $@
-../build/KERNEL: $(COBJS) $(ASOBJS)
+../build/%.asm.o: %.asm
+	nasm $(NASMFLAGS) $< -o $@
+../build/KERNEL: $(COBJS) $(ASOBJS) $(NASMOBJS)
 	$(LD) $(LDFLAGS) -o $@ $^
-all: $(COBJS) $(ASOBJS) $(OUTPUT)
+all: $(COBJS) $(ASOBJS) $(NASMOBJS) $(OUTPUT)
