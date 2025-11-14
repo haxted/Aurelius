@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <io.h>
+#include <string.h>
+#include <serial.h>
 
 volatile char* vgaBuf = (volatile char*)0xb8000;
 int col = 0;
@@ -15,11 +17,26 @@ void updateCursor(int x, int y) {
     outb((uint8_t)(pos >> 8) & 0xFF, 0x3D5);
 }
 
+void scroll(void) {
+    for(int i = 0; i < 40; i++) {
+        vgaBuf[i * 2] = ' ';
+        vgaBuf[i * 2 +1] = currentColor;
+    }
+    for(int y = 1; y < VGA_HEI; y++) {
+        for(int x = 0; x < VGA_WID; x++) {
+          vgaBuf[(y - 1) * VGA_WID + x] = vgaBuf[y * VGA_WID + x]; 
+        }
+    }
+    for(int i = (VGA_WID * VGA_HEI) - 80; i < (VGA_WID * VGA_HEI); i++) {
+        vgaBuf[i * 2] = ' ';
+        vgaBuf[i * 2 + 1] = currentColor;
+    }
+}
+
 void putchar(char c) {
     if(col >= VGA_WID) row++;
     if(row >= VGA_HEI) {
-        row = 0;
-        col = 0;
+        scroll();
     }
     switch(c) {
         case '\n': {
@@ -92,6 +109,7 @@ void putstr(const char* str) {
         str++;
     }
 }
+extern int serialReady;
 
 void printf(const char* fmt, ...) {
     
@@ -108,6 +126,8 @@ void printf(const char* fmt, ...) {
                     char hex[9];
                     putHex(x, 0, hex);
                     putstr(hex);
+                    if(serialReady)
+                        serialPutStr(hex);
                     fmt++;
                     continue;
                 }
@@ -119,6 +139,8 @@ void printf(const char* fmt, ...) {
                         continue;
                     }
                     putstr(s);
+                    if(serialReady)
+                        serialPutStr(s);
                     fmt++;
                     continue;
                 }
@@ -127,17 +149,23 @@ void printf(const char* fmt, ...) {
                     char dec[11];
                     putDec(x, dec);
                     putstr(dec);
+                    if(serialReady)
+                        serialPutStr(dec);
                     fmt++;
                     continue;
                 }
                 default: {
                     putchar(*fmt);
+                    if(serialReady)
+                        serialPutChar(*fmt);
                     fmt++;
                     continue;
                 }
             }
         }
         putchar(*fmt);
+        if(serialReady)
+            serialPutChar(*fmt);
         fmt++;
     }
     va_end(ap);
