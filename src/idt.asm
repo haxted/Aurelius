@@ -5,16 +5,22 @@ extern mainExceptionHandler
 %macro isrErrStub 1
 isrStub%+%1:
     pushad
+    push dword %1
+    push esp
     call mainExceptionHandler
-    popad
     add esp, 4
+    popad
     iretd
 %endmacro
 
 %macro isrNoErrStub 1
 isrStub%+%1:
+    push dword 0
     pushad
+    push dword %1
+    push esp
     call mainExceptionHandler
+    add esp, 8
     popad
     iretd
 %endmacro

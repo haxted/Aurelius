@@ -19,5 +19,6 @@ _start:
     cli
     mov $stack, %esp
     cld
+    pushl %ebx
     call kmain
     hlt

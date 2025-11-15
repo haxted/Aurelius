@@ -86,6 +86,7 @@ void putDec(int dec, char* out) {
     if(neg) out[i++] = '-';
     for(int n = 0; n < i / 2; n++) {
         char t = out[n];
+        out[n] = out[i-1-n];
         out[i-1-n] = t;
     }
     out[i] = '\0';

@@ -22,22 +22,23 @@ void idtInit() {
     }
     idtPtr.size = sizeof(idt) - 1;
     idtPtr.offset = (uint32_t)&idt;
-    // outb(0x11, 0x20);
-    // outb(0x11, 0xA0);
-    // outb(0x20, 0x21);
-    // outb(0x28, 0xA1);
-    // outb(1 << 2, 0x21);
-    // outb(2, 0xA1);
-    // outb(1, 0x21);
-    // outb(1, 0xA1);
-    outb(0xFF, 0x21);
-    outb(0xFF, 0xA1);
+    outb(0x11, 0x20);
+    outb(0x11, 0xA0);   
+    outb(0x20, 0x21);   
+    outb(0x28, 0xA1);   
+    outb(1 << 2, 0x21);   
+    outb(2, 0xA1);   
+    outb(1, 0x21);   
+    outb(1, 0xA1);   
+    outb(0x00, 0x21);
+    outb(0x00, 0xA1);
     loadIdt(&idtPtr);
     printf("[x86] initialized idt\n");
 }
 
-void mainExceptionHandler() {
-    printf("[except] metro boomin want some more\n");
+void mainExceptionHandler(IntFrame* intframe) {
+    printf("[except] x86 exception --- vector %d\n", intframe->intno);
+    printf("-- EIP: %x\n", intframe->eip);
     __asm__ volatile("cli; hlt");
 
 }
