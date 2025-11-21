@@ -19,22 +19,24 @@ void mapAddr(void* phys, void* virt, int flags) {
     uint32_t pt = GET_PT(virt);
     uint32_t pd = GET_PD(virt);
 
-    uint32_t pde = pagedir[pd];
 
-    if(!(pde & PDE_PRESENT)) {
+    if(!(pagedir[pd] & PDE_PRESENT)) {
         uint32_t t = (uint32_t)pmmAllocPage();
         memset((void*)t, 0, 4096);
         pagedir[pd] = t | PDE_PRESENT | PDE_US | PDE_RW;
-        pde = pagedir[pd];
     }
-    uint32_t* pagetable = (uint32_t*)(pde & PDE_PHYS);
+    uint32_t* pagetable = (uint32_t*)(pagedir[pd] & PDE_PHYS);
     pagetable[pt] = ((uint32_t)phys) | flags;
 }
 
-void initPaging(uint32_t identMapLen) {
+void initPaging(void* begin, void* end) {
+    if(((uint32_t)begin % 4096 || (uint32_t)end % 4096)) {
+        printf("[paging] please align your addrs\n");
+        return;
+    }
     memset(pagedir, 0, 4096);
     mapAddr(pagedir, pagedir, PTE_PRESENT | PTE_RW);
-    for(uint32_t i = 0; i < identMapLen; i += 0x1000) {
+    for(void* i = begin; i < end; i += 0x1000) {
         mapAddr((void*)i, (void*)i, PTE_PRESENT | PTE_RW);
     }
     __asm__ volatile(

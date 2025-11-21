@@ -31,8 +31,8 @@ enum {
 
 #define GET_OFF(addr) ((uint32_t)(addr) & 0xFFF)
 #define GET_PD(addr)  (((uint32_t)(addr) & 0xFFC00000) >> 22)
-#define GET_PT(addr)  (((uint32_t)(addr) & 0x3FF000) >> 22)
+#define GET_PT(addr)  (((uint32_t)(addr) & 0x3FF000) >> 12)
 
 void loadPageDir(void* pageDir);
 void mapAddr(void* phys, void* virt, int flags);
-void initPaging(uint32_t identMapLen);
+void initPaging(void* begin, void* end);
