@@ -5,13 +5,21 @@
 #include <serial.h>
 #include <multiboot.h>
 #include <pmm.h>
+#include <paging.h>
 
 void kmain(multiboot_info_t* mbinfo) {
     initSerial();
     gdtInit();
     idtInit();
     initPmm(mbinfo);
-    printf("%x\n", pmmAllocPage());
-    printf("[sys] system initialized\n%dK memory.\n", mbinfo->mem_lower + mbinfo->mem_upper);
+    void* x = pmmAllocPage();
+    printf("%x\n", x);
+
+    x = pmmAllocPage();
+    printf("%x\n", x);
+    
+    initPaging(0x400000);
+
+    printf("[sys] system initialized\n%dM memory.\n", (mbinfo->mem_lower + mbinfo->mem_upper) / 1024);
     panic("Nothing.");
 }

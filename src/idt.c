@@ -30,8 +30,8 @@ void idtInit() {
     outb(2, 0xA1);   
     outb(1, 0x21);   
     outb(1, 0xA1);   
-    outb(0x00, 0x21);
-    outb(0x00, 0xA1);
+    outb(0xFF, 0x21);
+    outb(0xFF, 0xA1);
     loadIdt(&idtPtr);
     printf("[x86] initialized idt\n");
 }
