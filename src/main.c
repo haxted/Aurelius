@@ -18,4 +18,5 @@ void kmain(multiboot_info_t* mbinfo) {
  
     initPaging((void*)NULL, (void*)0x400000);
     printf("[sys] system initialized\n");
+    panic("Hello");
 }

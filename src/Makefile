@@ -15,7 +15,7 @@ CFLAGS = -ffreestanding \
 		 -std=gnu99 -fno-pie \
 		 -fno-PIC -I include/ \
 		 -mno-sse -mno-sse2 \
-		 -O2 -g -c
+		 -O2 -g -c -fno-omit-frame-pointer
 LD = i686-elf-ld
 LDFLAGS = -T linker.ld -z noexecstack
 OUTPUT = ../build/KERNEL
