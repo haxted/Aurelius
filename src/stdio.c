@@ -18,7 +18,7 @@ void updateCursor(int x, int y) {
 }
 
 void scroll(void) {
-    for(int i = 0; i < 40; i++) {
+    for(int i = 0; i < VGA_WID; i++) {
         vgaBuf[i * 2] = ' ';
         vgaBuf[i * 2 +1] = currentColor;
     }
@@ -31,13 +31,10 @@ void scroll(void) {
         vgaBuf[i * 2] = ' ';
         vgaBuf[i * 2 + 1] = currentColor;
     }
+    row = VGA_HEI - 1;
 }
 
 void putchar(char c) {
-    if(col >= VGA_WID) row++;
-    if(row >= VGA_HEI) {
-        scroll();
-    }
     switch(c) {
         case '\n': {
             row++;
@@ -45,6 +42,10 @@ void putchar(char c) {
             return;
         }
         default: break;
+    }
+    if(col >= VGA_WID) row++;
+    if(row >= VGA_HEI) {
+        scroll();
     }
     int off = (row * VGA_WID + col);
     vgaBuf[off * 2] = c;

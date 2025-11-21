@@ -1,6 +1,8 @@
 global idtStubTable
 global loadIdt
 extern mainExceptionHandler
+global _irq0Handler
+extern irq0Handler
 
 %macro isrErrStub 1
 isrStub%+%1:
@@ -78,3 +80,9 @@ loadIdt:
     mov esp, ebp
     pop ebp
     ret
+
+_irq0Handler:
+    pushad
+    call irq0Handler
+    popad
+    iretd

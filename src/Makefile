@@ -22,11 +22,15 @@ OUTPUT = ../build/KERNEL
 
 
 ../build/%.c.o: %.c $(CHDRS)
-	$(CC) $(CFLAGS) $< -o $@
+	@$(CC) $(CFLAGS) $< -o $@
+	@echo "CC    $@"
 ../build/%.S.o: %.S
-	$(AS) $(ASFLAGS) $< -o $@
+	@$(AS) $(ASFLAGS) $< -o $@
+	@echo "AS    $@"
 ../build/%.asm.o: %.asm
-	nasm $(NASMFLAGS) $< -o $@
+	@nasm $(NASMFLAGS) $< -o $@
+	@echo "AS    $@"
 ../build/KERNEL: $(COBJS) $(ASOBJS) $(NASMOBJS)
-	$(LD) $(LDFLAGS) -o $@ $^
+	@$(LD) $(LDFLAGS) -o $@ $^
+	@echo "LD    $@"
 all: $(COBJS) $(ASOBJS) $(NASMOBJS) $(OUTPUT)

@@ -2,6 +2,10 @@
 #include <stdio.h>
 
 
+typedef struct _StackFrame {
+    struct _StackFrame* n;
+} StackFrame;
+
 
 void _panic(const char* reason, int line, const char* file);
 

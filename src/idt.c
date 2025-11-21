@@ -1,5 +1,6 @@
 #include <idt.h>
 #include <io.h>
+#include <pit.h>
 
 extern void* idtStubTable[];
 extern void loadIdt(IDTPtr* i);
@@ -16,6 +17,8 @@ void idtSetGate(uint8_t gate, uint32_t offset, uint16_t selector, uint8_t flags)
     idt[gate].flags = flags;
 }
 
+
+
 void idtInit() {
     for(int i = 0; i < 32; i++) {
         idtSetGate(i, (uint32_t)idtStubTable[i], 0x08, 0b10001110);
@@ -30,8 +33,9 @@ void idtInit() {
     outb(2, 0xA1);   
     outb(1, 0x21);   
     outb(1, 0xA1);   
-    outb(0xFF, 0x21);
-    outb(0xFF, 0xA1);
+    outb(0x00, 0x21);
+    outb(0x00, 0xA1);
+    initPit();
     loadIdt(&idtPtr);
     printf("[x86] initialized idt\n");
 }
@@ -42,3 +46,4 @@ void mainExceptionHandler(IntFrame* intframe) {
     __asm__ volatile("cli; hlt");
 
 }
+

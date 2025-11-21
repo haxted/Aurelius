@@ -21,4 +21,5 @@ _start:
     cld
     pushl %ebx
     call kmain
+    cli
     hlt

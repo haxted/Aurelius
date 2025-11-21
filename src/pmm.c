@@ -35,7 +35,7 @@ void initPmm(multiboot_info_t* mbinfo) {
         printf("[pmm] mmap->type = %x\n[pmm] mmap->addr = %x\n[pmm] mmap->len = %x\n[pmm] mmap->size = %x\n", mmap->type, mmap->addr, mmap->len, mmap->size);
         if(mmap->len >= bitmapBytes) {
             printf("[pmm] found area\n");
-            bitmap = (uint8_t*)mmap->addr;
+            bitmap = (uint8_t*)(uintptr_t)mmap->addr;
             break;
         }
         if(k == mbinfo->mmap_length) {

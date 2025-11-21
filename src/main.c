@@ -6,21 +6,16 @@
 #include <multiboot.h>
 #include <pmm.h>
 #include <paging.h>
+#include <pit.h>
 #include <stddef.h>
+#include <pic.h>
 
 void kmain(multiboot_info_t* mbinfo) {
     initSerial();
     gdtInit();
     idtInit();
     initPmm(mbinfo);
-    void* x = pmmAllocPage();
-    printf("%x\n", x);
-
-    x = pmmAllocPage();
-    printf("%x\n", x);
-    
+ 
     initPaging((void*)NULL, (void*)0x400000);
-
-    printf("[sys] system initialized\n%dM memory.\n", (mbinfo->mem_lower + mbinfo->mem_upper) / 1024);
-    panic("Nothing.");
+    printf("[sys] system initialized\n");
 }
