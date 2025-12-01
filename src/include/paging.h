@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <panic.h>
 #include <pmm.h>
+#include <multiboot.h>
 
 enum {
     PDE_PRESENT = 1 << 0,
@@ -32,7 +33,9 @@ enum {
 #define GET_OFF(addr) ((uint32_t)(addr) & 0xFFF)
 #define GET_PD(addr)  (((uint32_t)(addr) & 0xFFC00000) >> 22)
 #define GET_PT(addr)  (((uint32_t)(addr) & 0x3FF000) >> 12)
+#define ROUND_UP(addr) ((uintptr_t)(addr) & ~(4095)) + 4096
+#define ROUND_DOWN(addr) ((uintptr_t)(addr) & ~(0xFFF))
 
 void loadPageDir(void* pageDir);
 void mapAddr(void* phys, void* virt, int flags);
-void initPaging(void* begin, void* end);
+void initPaging(void* begin, void* end, multiboot_info_t* mbinfo);

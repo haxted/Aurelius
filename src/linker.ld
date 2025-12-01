@@ -2,20 +2,29 @@ ENTRY(_start)
 
 SECTIONS {
     . = 2M;
-    .text : {
+    __kernel_start = .;
+    .text : ALIGN(4096) {
+        __text_start = .;
         KEEP(*(.multiboot))
         *(.text)
+        __text_end = .;
     }
-    .rodata : {
+    .rodata : ALIGN(4096) {
+        __rodata_start = .;
         *(.rodata)
+        __rodata_end = .;
     }
-    .data : {
+    .data : ALIGN(4096) {
+        __data_start = .;
         *(.data)
+        __data_end = .;
     }
-    .bss : {
+    .bss : ALIGN(4096) {
+        __bss_start = .;
         *(.bss)
+        __bss_end = .;
         *(COMMON)
     }
-   
+   __kernel_end = .;
   
 }

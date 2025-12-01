@@ -27,12 +27,9 @@ void initPmm(multiboot_info_t* mbinfo) {
     systemPageNumber = totalPages;
     bitmapLen = bitmapBytes;
     bitmapLn = bitmapLen;
-
-    printf("[pmm] total memory: %d\n", totalMem);
     mmap = (multiboot_memory_map_t*)mbinfo->mmap_addr;
     k = 0;
     while(k < mbinfo->mmap_length) {
-        printf("[pmm] mmap->type = %x\n[pmm] mmap->addr = %x\n[pmm] mmap->len = %x\n[pmm] mmap->size = %x\n", mmap->type, mmap->addr, mmap->len, mmap->size);
         if(mmap->len >= bitmapBytes) {
             printf("[pmm] found area\n");
             bitmap = (uint8_t*)(uintptr_t)mmap->addr;
@@ -75,8 +72,6 @@ void* pmmAllocPage(void) {
     unsigned pageFound = 0;
     for(unsigned i = 0; i < systemPageNumber; i++) {
         unsigned byteOff = i / 8;
-        if(bitmap[byteOff] == 0xff)
-            continue;
         unsigned bitOff = i % 8;
         int bit = (bitmap[byteOff] >> bitOff) & 1;
         if(!bit) {

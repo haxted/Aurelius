@@ -3,55 +3,56 @@
 #include <io.h>
 #include <string.h>
 #include <serial.h>
+#include <flanterm/src/flanterm.h>
 
-volatile char* vgaBuf = (volatile char*)0xb8000;
-int col = 0;
-int row = 0;
-uint8_t currentColor = 0x07;
+extern struct flanterm_context* fctx;
 
-void updateCursor(int x, int y) {
-    uint16_t pos = (y * VGA_WID + x);
-    outb(0x0F, 0x3d4);
-    outb((uint8_t)pos & 0xFF, 0x3D5);
-    outb(0x0E, 0x3D4);
-    outb((uint8_t)(pos >> 8) & 0xFF, 0x3D5);
-}
+// volatile char* vgaBuf = (volatile char*)0xb8000;
+// int col = 0;
+// int row = 0;
+// uint8_t currentColor = 0x07;
 
-void scroll(void) {
-    for(int i = 0; i < VGA_WID; i++) {
-        vgaBuf[i * 2] = ' ';
-        vgaBuf[i * 2 +1] = currentColor;
-    }
-    for(int y = 1; y < VGA_HEI; y++) {
-        for(int x = 0; x < VGA_WID; x++) {
-          vgaBuf[(y - 1) * VGA_WID + x] = vgaBuf[y * VGA_WID + x]; 
-        }
-    }
-    for(int i = (VGA_WID * VGA_HEI) - 80; i < (VGA_WID * VGA_HEI); i++) {
-        vgaBuf[i * 2] = ' ';
-        vgaBuf[i * 2 + 1] = currentColor;
-    }
-    row = VGA_HEI - 1;
-}
+// void updateCursor(int x, int y) {
+//     uint16_t pos = (y * VGA_WID + x);
+//     outb(0x0F, 0x3d4);
+//     outb((uint8_t)pos & 0xFF, 0x3D5);
+//     outb(0x0E, 0x3D4);
+//     outb((uint8_t)(pos >> 8) & 0xFF, 0x3D5);
+// }
+
+// void scroll(void) {
+//     for(int i = 0; i < VGA_WID; i++) {
+//         vgaBuf[i * 2] = ' ';
+//         vgaBuf[i * 2 +1] = currentColor;
+//     }
+    
+//     // for(int i = (VGA_WID * VGA_HEI) - 80; i < (VGA_WID * VGA_HEI); i++) {
+//     //     vgaBuf[i * 2] = ' ';
+//     //     vgaBuf[i * 2 + 1] = currentColor;
+//     // }
+//     memmove(vgaBuf, vgaBuf + (VGA_HEI - 1) , ((VGA_WID - 1) * VGA_HEI) - (VGA_HEI - 1));
+//     row = VGA_HEI - 1;
+// }
 
 void putchar(char c) {
-    switch(c) {
-        case '\n': {
-            row++;
-            col = 0;
-            return;
-        }
-        default: break;
-    }
-    if(col >= VGA_WID) row++;
-    if(row >= VGA_HEI) {
-        scroll();
-    }
-    int off = (row * VGA_WID + col);
-    vgaBuf[off * 2] = c;
-    vgaBuf[off * 2 + 1] = currentColor;
-    col++;
-    updateCursor(col, row);
+    // switch(c) {
+    //     case '\n': {
+    //         row++;
+    //         col = 0;
+    //         return;
+    //     }
+    //     default: break;
+    // }
+    // if(col >= VGA_WID) row++;
+    // if(row >= VGA_HEI) {
+    //     scroll();
+    // }
+    // int off = (row * VGA_WID + col);
+    // vgaBuf[off * 2] = c;
+    // vgaBuf[off * 2 + 1] = currentColor;
+    // col++;
+    // updateCursor(col, row);
+    flanterm_write(fctx, &c, 1);
 }
 
 void putHex(int hex, int set, char* out) {
@@ -156,6 +157,14 @@ void printf(const char* fmt, ...) {
                     fmt++;
                     continue;
                 }
+                case 'c': {
+                    char c = va_arg(ap, int);
+                    putchar(c);
+                    if(serialReady)
+                        serialPutChar(c);
+                    fmt++;
+                    continue;
+                }
                 default: {
                     putchar(*fmt);
                     if(serialReady)
@@ -173,6 +182,6 @@ void printf(const char* fmt, ...) {
     va_end(ap);
 }
 
-void setColor(uint8_t color) {
-    currentColor = color;
-}
+// void setColor(uint8_t color) {
+//     currentColor = color;
+// }

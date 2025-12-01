@@ -2,7 +2,7 @@ CC = i686-elf-gcc
 AS = i686-elf-as
 ASFLAGS = -g
 ASFILES = $(wildcard *.S)
-CFILES = $(wildcard *.c)
+CFILES = $(shell find . -type f -name "*.c")
 CHDRS = $(wildcard include/*.h)
 ASOBJS = $(patsubst %.S, ../build/%.S.o, $(ASFILES))
 COBJS = $(patsubst %.c, ../build/%.c.o, $(CFILES))
@@ -14,6 +14,7 @@ CFLAGS = -ffreestanding \
 		 -mno-red-zone -fno-stack-protector \
 		 -std=gnu99 -fno-pie \
 		 -fno-PIC -I include/ \
+		 -I . \
 		 -mno-sse -mno-sse2 \
 		 -O2 -g -c -fno-omit-frame-pointer
 LD = i686-elf-ld
@@ -22,6 +23,7 @@ OUTPUT = ../build/KERNEL
 
 
 ../build/%.c.o: %.c $(CHDRS)
+	@mkdir -p "$$(dirname $@)"
 	@$(CC) $(CFLAGS) $< -o $@
 	@echo "CC    $@"
 ../build/%.S.o: %.S

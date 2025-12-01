@@ -6,6 +6,8 @@ loadGdt:
 
     movl 8(%ebp), %eax
     lgdt (%eax)
+    mov $0x28, %ax
+    ltr %ax
     movl %ebp, %esp
     popl %ebp
     ljmp $0x08, $relrg

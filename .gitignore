@@ -1,3 +1,4 @@
 build/*
 os.iso
 isodir/*
+boot/init.tar
